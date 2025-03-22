@@ -56,12 +56,16 @@ public class CreateTables {
             stmt = conn.createStatement();
             CreateTables tableCreator = new CreateTables();
             tableCreator.createStudentTable(stmt);
+            System.out.println("Student table created successfully.");
 
             System.out.println("Creating department table...");
             tableCreator.createDepartmentTable(stmt);
-
             System.out.println("Department table created successfully.");
 
+            System.out.println("Creating degrees table...");
+            tableCreator.createDegreesTable(stmt);
+            System.out.println("Degrees table created successfully.");
+            
             // Display success message
             System.out.println("Database setup completed successfully.");
         } catch (SQLException e) {

@@ -18,11 +18,7 @@ public class CreateTables {
                 + "p_phone VARCHAR(20) NOT NULL,"
                 + "c_addr VARCHAR(20) NOT NULL,"
                 + "c_phone VARCHAR(20) NOT NULL)";
-        try {
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        stmt.executeUpdate(sql);
     }
 
     public void createDepartmentTable(Statement stmt) throws SQLException {
@@ -31,22 +27,53 @@ public class CreateTables {
                 + "dname VARCHAR(50) UNIQUE NOT NULL,"
                 + "phone VARCHAR(10) NOT NULL,"
                 + "college VARCHAR(20) NOT NULL)";
-        try {
-            
-        } catch (SQLException e) {
-            
-        }
+        stmt.executeUpdate(sql);
     }
 
     public static void main(String[] args) {
         // Open a connection
-        CreateTables tables = new CreateTables();
-        try (
-                Connection conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS); Statement stmt = conn.createStatement();) {
-            tables.createStudentTable(stmt);
-            System.out.println("Created student table in given database...");
+        System.out.println("Starting database setup process...");
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            System.out.println("Connecting to database...");
+            conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
+            System.out.println("Connection established successfully.");
+
+            // Create tables
+            System.out.println("Creating student table...");
+            stmt = conn.createStatement();
+            CreateTables tableCreator = new CreateTables();
+            tableCreator.createStudentTable(stmt);
+
+            System.out.println("Creating department table...");
+            tableCreator.createDepartmentTable(stmt);
+
+            System.out.println("Department table created successfully.");
+
+            // Display success message
+            System.out.println("Database setup completed successfully.");
         } catch (SQLException e) {
+            System.out.println("Database operation failed:");
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("SQL State: " + e.getSQLState());
+            System.out.println("Error Code: " + e.getErrorCode());
             e.printStackTrace();
+        } finally {
+            // Close resources
+            System.out.println("Closing database resources...");
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+                System.out.println("Resources closed successfully.");
+            } catch (SQLException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
         }
     }
 }

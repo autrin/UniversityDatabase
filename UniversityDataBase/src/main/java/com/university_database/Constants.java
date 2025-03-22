@@ -1,5 +1,5 @@
 package com.university_database;
-
+// TODO ignore this
 public class Constants {
 
     public static final String DB_URL = "jdbc:mysql://localhost:3306/";

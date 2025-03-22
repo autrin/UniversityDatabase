@@ -30,6 +30,16 @@ public class CreateTables {
         stmt.executeUpdate(sql);
     }
 
+    public void createDegreesTable(Statement stmt) throws SQLException{
+        String sql = "CREATE TABLE degrees (" +
+        "dgname VARCHAR(50) NOT NULL," +
+        "level VARCHAR(5) NOT NULL," +
+        "department_code INTEGER NOT NULL," +
+        "PRIMARY KEY (dgname, level)," +
+        "FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
+        stmt.executeUpdate(sql);
+    }
+
     public static void main(String[] args) {
         // Open a connection
         System.out.println("Starting database setup process...");

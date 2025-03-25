@@ -11,10 +11,10 @@ import java.sql.Statement;
 public class CreateTables {
 
 	public void createStudentTable(Statement stmt) throws SQLException {
-	    // Drop the table if it exists
-	    String dropSql = "DROP TABLE IF EXISTS students";
-	    stmt.execute(dropSql);
-	    
+		// Drop the table if it exists
+		String dropSql = "DROP TABLE IF EXISTS students";
+		stmt.execute(dropSql);
+
 		String sql = "CREATE TABLE students("
 
 				+ "sid INTEGER UNIQUE NOT NULL,"
@@ -40,10 +40,10 @@ public class CreateTables {
 	}
 
 	public void createDepartmentTable(Statement stmt) throws SQLException {
-	    // Drop the table if it exists
-	    String dropSql = "DROP TABLE IF EXISTS departments";
-	    stmt.execute(dropSql);
-	    
+		// Drop the table if it exists
+		String dropSql = "DROP TABLE IF EXISTS departments";
+		stmt.execute(dropSql);
+
 		String sql = "CREATE TABLE departments ("
 
 				+ "dcode INTEGER PRIMARY KEY,"
@@ -59,10 +59,10 @@ public class CreateTables {
 	}
 
 	public void createDegreesTable(Statement stmt) throws SQLException {
-	    // Drop the table if it exists
-	    String dropSql = "DROP TABLE IF EXISTS degrees";
-	    stmt.execute(dropSql);
-	    
+		// Drop the table if it exists
+		String dropSql = "DROP TABLE IF EXISTS degrees";
+		stmt.execute(dropSql);
+
 		String sql = "CREATE TABLE degrees (" +
 
 				"dgname VARCHAR(50) NOT NULL," +
@@ -78,49 +78,69 @@ public class CreateTables {
 		stmt.execute(sql);
 
 	}
-	
+
 	public void createCoursesTable(Statement stmt) throws SQLException {
-	    // Drop the table if it exists
-	    String dropSql = "DROP TABLE IF EXISTS courses";
-	    stmt.execute(dropSql);
-	    
+		// Drop the table if it exists
+		String dropSql = "DROP TABLE IF EXISTS courses";
+		stmt.execute(dropSql);
+
 		String sql = "CREATE TABLE courses (" +
 
-			    "cnumber INTEGER PRIMARY KEY," +
+				"cnumber INTEGER PRIMARY KEY," +
 
-			    "cname VARCHAR(50) NOT NULL," +
+				"cname VARCHAR(50) NOT NULL," +
 
-			    "description VARCHAR(50)," +
+				"description VARCHAR(50)," +
 
-			    "credithours INTEGER NOT NULL," +
+				"credithours INTEGER NOT NULL," +
 
-			    "level VARCHAR(20) NOT NULL," +
+				"level VARCHAR(20) NOT NULL," +
 
-			    "department_code INTEGER NOT NULL," +
+				"department_code INTEGER NOT NULL," +
 
-			    "FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
+				"FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
 
 		stmt.execute(sql);
 	}
-	
-	public void createRegisterTable(Statement stmt) throws SQLException {
-	    // Drop the table if it exists
-	    String dropSql = "DROP TABLE IF EXISTS register";
-	    stmt.execute(dropSql);
-	    
-	    String sql = "CREATE TABLE register ("
-	            + "sid INTEGER NOT NULL,"
-	            + "course_number INTEGER NOT NULL,"
-	            + "regtime VARCHAR(20) NOT NULL,"
-	            + "grade INTEGER,"
-	            + "PRIMARY KEY (sid, course_number),"
-	            + "FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE,"
-	            + "FOREIGN KEY (course_number) REFERENCES courses(cnumber) ON DELETE CASCADE"
-	            + ")";
 
-	    stmt.execute(sql);
+	public void createRegisterTable(Statement stmt) throws SQLException {
+		// Drop the table if it exists
+		String dropSql = "DROP TABLE IF EXISTS register";
+		stmt.execute(dropSql);
+
+		String sql = "CREATE TABLE register (" + "sid INTEGER NOT NULL," + "course_number INTEGER NOT NULL,"
+				+ "regtime VARCHAR(20) NOT NULL," + "grade INTEGER," + "PRIMARY KEY (sid, course_number),"
+				+ "FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE,"
+				+ "FOREIGN KEY (course_number) REFERENCES courses(cnumber) ON DELETE CASCADE" + ")";
+
+		stmt.execute(sql);
 	}
 
+	public void createMajorTable(Statement stmt) throws SQLException {
+		// Drop the table if it exists
+		String dropSql = "DROP TABLE IF EXISTS major";
+		stmt.execute(dropSql);
+
+		String sql = "CREATE TABLE major (" + "sid INTEGER NOT NULL," + "name VARCHAR(50) NOT NULL,"
+				+ "level VARCHAR(5) NOT NULL," + "PRIMARY KEY (sid, name, level),"
+				+ "FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE,"
+				+ "FOREIGN KEY (name, level) REFERENCES degrees(dgname, level) ON DELETE CASCADE" + ")";
+
+		stmt.execute(sql);
+	}
+
+	public void createMinorTable(Statement stmt) throws SQLException {
+		// Drop the table if it exists
+		String dropSql = "DROP TABLE IF EXISTS minor";
+		stmt.execute(dropSql);
+
+		String sql = "CREATE TABLE minor (" + "sid INTEGER NOT NULL," + "name VARCHAR(50) NOT NULL,"
+				+ "level VARCHAR(5) NOT NULL," + "PRIMARY KEY (sid, name, level),"
+				+ "FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE,"
+				+ "FOREIGN KEY (name, level) REFERENCES degrees(dgname, level) ON DELETE CASCADE" + ")";
+
+		stmt.execute(sql);
+	}
 
 	public static void main(String[] args) {
 

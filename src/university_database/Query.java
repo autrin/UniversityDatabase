@@ -7,12 +7,16 @@ import java.sql.Statement;
 
 public class Query {
 
-	public void query1(Statement stmt) {
+	public void query1(Statement stmt) throws SQLException{
 		/*
 		 * The numbers and names of courses and their corresponding average grades from
 		 * students registered in the past semesters
 		 */
-		
+		String sql = "SELECT c.cnumber, c.cname, AVG(r.grade)" + 
+					"FROM courses c" + 
+					"Join register r on c.cnumber = r.cnumber" +
+					"GROUP BY c.cnumber, c.cname";
+		stmt.execute(sql);
 	}
 
 	public static void main(String[] args) {
@@ -20,15 +24,18 @@ public class Query {
 		Connection conn = null;
 		Statement stmt = null;
 		Query query = new Query();
-		
+
 		try {
 			conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
-			stmt  = conn.createStatement();
+			stmt = conn.createStatement();
 			System.out.println("Connection established.");
-			
-			
+
+			System.out.println("Query 1:");
+			query.query1(stmt);
+			System.out.println("Query 1 completed.");
+
 		} catch (SQLException e) {
-			
+
 		}
 	}
 

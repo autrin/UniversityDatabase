@@ -7,15 +7,13 @@ import java.sql.Statement;
 
 public class Query {
 
-	public void query1(Statement stmt) throws SQLException{
+	public void query1(Statement stmt) throws SQLException {
 		/*
 		 * The numbers and names of courses and their corresponding average grades from
 		 * students registered in the past semesters
 		 */
-		String sql = "SELECT c.cnumber, c.cname, AVG(r.grade)" + 
-					"FROM courses c" + 
-					"Join register r on c.cnumber = r.cnumber" +
-					"GROUP BY c.cnumber, c.cname";
+		String sql = "SELECT c.cnumber, c.cname, AVG(r.grade)" + "FROM courses c"
+				+ "Join register r on c.cnumber = r.cnumber" + "GROUP BY c.cnumber, c.cname";
 		stmt.execute(sql);
 	}
 
@@ -40,6 +38,18 @@ public class Query {
 			System.out.println("SQL State: " + e.getSQLState());
 			System.out.println("Error Code: " + e.getErrorCode());
 			e.printStackTrace();
+		} finally {
+			// Close recourses
+			System.out.println("Closing database resources...");
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+				System.out.println("Resources closed successfully.");
+			} catch (SQLException e) {
+				System.out.println("Error closing resources: " + e.getMessage());
+			}
 		}
 	}
 

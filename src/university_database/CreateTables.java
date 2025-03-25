@@ -15,23 +15,9 @@ public class CreateTables {
 		String dropSql = "DROP TABLE IF EXISTS students";
 		stmt.execute(dropSql);
 
-		String sql = "CREATE TABLE students("
-
-				+ "sid INTEGER UNIQUE NOT NULL,"
-
-				+ "ssn INTEGER PRIMARY KEY,"
-
-				+ "name VARCHAR(20) NOT NULL,"
-
-				+ "gender VARCHAR(1) NOT NULL,"
-
-				+ "dob VARCHAR(10) NOT NULL,"
-
-				+ "p_addr VARCHAR(20) NOT NULL,"
-
-				+ "p_phone VARCHAR(20) NOT NULL,"
-
-				+ "c_addr VARCHAR(20) NOT NULL,"
+		String sql = "CREATE TABLE students(" + "sid INTEGER UNIQUE NOT NULL," + "ssn INTEGER PRIMARY KEY,"
+				+ "name VARCHAR(20) NOT NULL," + "gender VARCHAR(1) NOT NULL," + "dob VARCHAR(10) NOT NULL,"
+				+ "p_addr VARCHAR(20) NOT NULL," + "p_phone VARCHAR(20) NOT NULL," + "c_addr VARCHAR(20) NOT NULL,"
 
 				+ "c_phone VARCHAR(20) NOT NULL)";
 
@@ -84,21 +70,10 @@ public class CreateTables {
 		String dropSql = "DROP TABLE IF EXISTS courses";
 		stmt.execute(dropSql);
 
-		String sql = "CREATE TABLE courses (" +
-
-				"cnumber INTEGER PRIMARY KEY," +
-
-				"cname VARCHAR(50) NOT NULL," +
-
-				"description VARCHAR(50)," +
-
-				"credithours INTEGER NOT NULL," +
-
-				"level VARCHAR(20) NOT NULL," +
-
-				"department_code INTEGER NOT NULL," +
-
-				"FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
+		String sql = "CREATE TABLE courses (" + "cnumber INTEGER PRIMARY KEY," + "cname VARCHAR(50) NOT NULL,"
+				+ "description VARCHAR(50)," + "credithours INTEGER NOT NULL," + "level VARCHAR(20) NOT NULL,"
+				+ "department_code INTEGER NOT NULL,"
+				+ "FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
 
 		stmt.execute(sql);
 	}
@@ -143,93 +118,69 @@ public class CreateTables {
 	}
 
 	public static void main(String[] args) {
-
-		// Open a connection
-
 		System.out.println("Starting database setup process...");
 
 		Connection conn = null;
-
 		Statement stmt = null;
 
 		try {
-
 			System.out.println("Connecting to database...");
-
 			conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
-
 			System.out.println("Connection established successfully.");
 
 			// Create tables
-
-			System.out.println("Creating student table...");
-
 			stmt = conn.createStatement();
-
 			CreateTables tableCreator = new CreateTables();
 
+			System.out.println("Creating student table...");
 			tableCreator.createStudentTable(stmt);
-
 			System.out.println("Student table created successfully.");
 
 			System.out.println("Creating department table...");
-
 			tableCreator.createDepartmentTable(stmt);
-
 			System.out.println("Department table created successfully.");
 
 			System.out.println("Creating degrees table...");
-
 			tableCreator.createDegreesTable(stmt);
-
 			System.out.println("Degrees table created successfully.");
 
-			// Display success message
+			System.out.println("Creating courses table...");
+			tableCreator.createCoursesTable(stmt);
+			System.out.println("Courses table created successfully.");
 
+			System.out.println("Creating register table...");
+			tableCreator.createRegisterTable(stmt);
+			System.out.println("Register table created successfully.");
+
+			System.out.println("Creating major table...");
+			tableCreator.createMajorTable(stmt);
+			System.out.println("Major table created successfully.");
+
+			System.out.println("Creating minor table...");
+			tableCreator.createMinorTable(stmt);
+			System.out.println("Minor table created successfully.");
+
+			// Display success message
 			System.out.println("Database setup completed successfully.");
 
 		} catch (SQLException e) {
-
 			System.out.println("Database operation failed:");
-
 			System.out.println("Error: " + e.getMessage());
-
 			System.out.println("SQL State: " + e.getSQLState());
-
 			System.out.println("Error Code: " + e.getErrorCode());
-
 			e.printStackTrace();
-
 		} finally {
-
 			// Close resources
-
 			System.out.println("Closing database resources...");
-
 			try {
-
-				if (stmt != null) {
-
+				if (stmt != null)
 					stmt.close();
-
-				}
-
-				if (conn != null) {
-
+				if (conn != null)
 					conn.close();
-
-				}
-
 				System.out.println("Resources closed successfully.");
-
 			} catch (SQLException e) {
-
 				System.out.println("Error closing resources: " + e.getMessage());
-
 			}
-
 		}
-
 	}
-
 }

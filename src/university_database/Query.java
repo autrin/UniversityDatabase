@@ -35,7 +35,11 @@ public class Query {
 			System.out.println("Query 1 completed.");
 
 		} catch (SQLException e) {
-
+			System.out.println("Database operation failed:");
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("SQL State: " + e.getSQLState());
+			System.out.println("Error Code: " + e.getErrorCode());
+			e.printStackTrace();
 		}
 	}
 

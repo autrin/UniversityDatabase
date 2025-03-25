@@ -11,7 +11,10 @@ import java.sql.Statement;
 public class CreateTables {
 
 	public void createStudentTable(Statement stmt) throws SQLException {
-
+	    // Drop the table if it exists
+	    String dropSql = "DROP TABLE IF EXISTS students";
+	    stmt.execute(dropSql);
+	    
 		String sql = "CREATE TABLE students("
 
 				+ "sid INTEGER UNIQUE NOT NULL,"
@@ -37,7 +40,9 @@ public class CreateTables {
 	}
 
 	public void createDepartmentTable(Statement stmt) throws SQLException {
-
+	    // Drop the table if it exists
+	    String dropSql = "DROP TABLE IF EXISTS departments";
+	    stmt.execute(dropSql);
 		String sql = "CREATE TABLE departments ("
 
 				+ "dcode INTEGER PRIMARY KEY,"

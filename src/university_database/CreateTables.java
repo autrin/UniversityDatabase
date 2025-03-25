@@ -11,18 +11,15 @@ import java.sql.Statement;
 public class CreateTables {
 
 	public void createStudentTable(Statement stmt) throws SQLException {
-		// Drop the table if it exists
 		String dropSql = "DROP TABLE IF EXISTS students";
 		stmt.execute(dropSql);
 
-		String sql = "CREATE TABLE students(" + "sid INTEGER UNIQUE NOT NULL," + "ssn INTEGER PRIMARY KEY,"
+		String sql = "CREATE TABLE students (" + "sid INTEGER UNIQUE NOT NULL," + "ssn INTEGER PRIMARY KEY,"
 				+ "name VARCHAR(20) NOT NULL," + "gender VARCHAR(1) NOT NULL," + "dob VARCHAR(10) NOT NULL,"
 				+ "p_addr VARCHAR(20) NOT NULL," + "p_phone VARCHAR(20) NOT NULL," + "c_addr VARCHAR(20) NOT NULL,"
-
-				+ "c_phone VARCHAR(20) NOT NULL)";
+				+ "c_phone VARCHAR(20) NOT NULL" + ")";
 
 		stmt.execute(sql);
-
 	}
 
 	public void createDepartmentTable(Statement stmt) throws SQLException {
@@ -30,15 +27,8 @@ public class CreateTables {
 		String dropSql = "DROP TABLE IF EXISTS departments";
 		stmt.execute(dropSql);
 
-		String sql = "CREATE TABLE departments ("
-
-				+ "dcode INTEGER PRIMARY KEY,"
-
-				+ "dname VARCHAR(50) UNIQUE NOT NULL,"
-
-				+ "phone VARCHAR(10) NOT NULL,"
-
-				+ "college VARCHAR(20) NOT NULL)";
+		String sql = "CREATE TABLE departments (" + "dcode INTEGER PRIMARY KEY," + "dname VARCHAR(50) UNIQUE NOT NULL,"
+				+ "phone VARCHAR(10) NOT NULL," + "college VARCHAR(20) NOT NULL)";
 
 		stmt.execute(sql);
 
@@ -49,17 +39,9 @@ public class CreateTables {
 		String dropSql = "DROP TABLE IF EXISTS degrees";
 		stmt.execute(dropSql);
 
-		String sql = "CREATE TABLE degrees (" +
-
-				"dgname VARCHAR(50) NOT NULL," +
-
-				"level VARCHAR(5) NOT NULL," +
-
-				"department_code INTEGER NOT NULL," +
-
-				"PRIMARY KEY (dgname, level)," +
-
-				"FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
+		String sql = "CREATE TABLE degrees (" + "dgname VARCHAR(50) NOT NULL," + "level VARCHAR(5) NOT NULL,"
+				+ "department_code INTEGER NOT NULL," + "PRIMARY KEY (dgname, level),"
+				+ "FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
 
 		stmt.execute(sql);
 
@@ -128,8 +110,21 @@ public class CreateTables {
 			conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
 			System.out.println("Connection established successfully.");
 
-			// Create tables
 			stmt = conn.createStatement();
+
+			// Disable foreign key checks before dropping tables
+			System.out.println("Disabling foreign key checks...");
+			stmt.execute("SET FOREIGN_KEY_CHECKS=0;");
+
+			// Create tables in the correct order:
+			// 1) students
+			// 2) departments
+			// 3) degrees
+			// 4) courses
+			// 5) major
+			// 6) minor
+			// 7) register
+
 			CreateTables tableCreator = new CreateTables();
 
 			System.out.println("Creating student table...");
@@ -148,10 +143,6 @@ public class CreateTables {
 			tableCreator.createCoursesTable(stmt);
 			System.out.println("Courses table created successfully.");
 
-			System.out.println("Creating register table...");
-			tableCreator.createRegisterTable(stmt);
-			System.out.println("Register table created successfully.");
-
 			System.out.println("Creating major table...");
 			tableCreator.createMajorTable(stmt);
 			System.out.println("Major table created successfully.");
@@ -160,7 +151,14 @@ public class CreateTables {
 			tableCreator.createMinorTable(stmt);
 			System.out.println("Minor table created successfully.");
 
-			// Display success message
+			System.out.println("Creating register table...");
+			tableCreator.createRegisterTable(stmt);
+			System.out.println("Register table created successfully.");
+
+			// Enable foreign key checks after creating tables
+			System.out.println("Enabling foreign key checks...");
+			stmt.execute("SET FOREIGN_KEY_CHECKS=1;");
+
 			System.out.println("Database setup completed successfully.");
 
 		} catch (SQLException e) {

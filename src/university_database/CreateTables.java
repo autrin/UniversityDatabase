@@ -2,273 +2,185 @@ package university_database;
 
 import java.sql.Connection;
 
-
-
 import java.sql.DriverManager;
-
 
 import java.sql.SQLException;
 
-
 import java.sql.Statement;
-
-
-
-
 
 public class CreateTables {
 
+	public void createStudentTable(Statement stmt) throws SQLException {
 
+		String sql = "CREATE TABLE students("
 
+				+ "sid INTEGER UNIQUE NOT NULL,"
 
+				+ "ssn INTEGER PRIMARY KEY,"
 
-    public void createStudentTable(Statement stmt) throws SQLException {
+				+ "name VARCHAR(20) NOT NULL,"
 
+				+ "gender VARCHAR(1) NOT NULL,"
 
-        String sql = "CREATE TABLE students("
+				+ "dob VARCHAR(10) NOT NULL,"
 
+				+ "p_addr VARCHAR(20) NOT NULL,"
 
-                + "sid INTEGER UNIQUE NOT NULL,"
+				+ "p_phone VARCHAR(20) NOT NULL,"
 
+				+ "c_addr VARCHAR(20) NOT NULL,"
 
-                + "ssn INTEGER PRIMARY KEY,"
+				+ "c_phone VARCHAR(20) NOT NULL)";
 
+		stmt.execute(sql);
 
-                + "name VARCHAR(20) NOT NULL,"
+	}
 
+	public void createDepartmentTable(Statement stmt) throws SQLException {
 
-                + "gender VARCHAR(1) NOT NULL,"
+		String sql = "CREATE TABLE departments ("
 
+				+ "dcode INTEGER PRIMARY KEY,"
 
-                + "dob VARCHAR(10) NOT NULL,"
+				+ "dname VARCHAR(50) UNIQUE NOT NULL,"
 
+				+ "phone VARCHAR(10) NOT NULL,"
 
-                + "p_addr VARCHAR(20) NOT NULL,"
+				+ "college VARCHAR(20) NOT NULL)";
 
+		stmt.execute(sql);
 
-                + "p_phone VARCHAR(20) NOT NULL,"
+	}
 
+	public void createDegreesTable(Statement stmt) throws SQLException {
 
-                + "c_addr VARCHAR(20) NOT NULL,"
+		String sql = "CREATE TABLE degrees (" +
 
+				"dgname VARCHAR(50) NOT NULL," +
 
-                + "c_phone VARCHAR(20) NOT NULL)";
+				"level VARCHAR(5) NOT NULL," +
 
+				"department_code INTEGER NOT NULL," +
 
-        stmt.executeUpdate(sql);
+				"PRIMARY KEY (dgname, level)," +
 
+				"FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
 
-    }
+		stmt.execute(sql);
 
+	}
+	
+	public void createCoursesTable(Statement stmt) throws SQLException {
+		
+		String sql = "CREATE TABLE courses (" +
 
+			    "cnumber INTEGER PRIMARY KEY," +
 
+			    "cname VARCHAR(50) NOT NULL," +
 
+			    "description VARCHAR(50)," +
 
-    public void createDepartmentTable(Statement stmt) throws SQLException {
+			    "credithours INTEGER NOT NULL," +
 
+			    "level VARCHAR(20) NOT NULL," +
 
-        String sql = "CREATE TABLE departments ("
+			    "department_code INTEGER NOT NULL," +
 
+			    "FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
 
-                + "dcode INTEGER PRIMARY KEY,"
+		stmt.execute(sql);
+	}
+	
+	
 
+	public static void main(String[] args) {
 
-                + "dname VARCHAR(50) UNIQUE NOT NULL,"
+		// Open a connection
 
+		System.out.println("Starting database setup process...");
 
-                + "phone VARCHAR(10) NOT NULL,"
+		Connection conn = null;
 
+		Statement stmt = null;
 
-                + "college VARCHAR(20) NOT NULL)";
+		try {
 
+			System.out.println("Connecting to database...");
 
-        stmt.executeUpdate(sql);
+			conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
 
+			System.out.println("Connection established successfully.");
 
-    }
+			// Create tables
 
+			System.out.println("Creating student table...");
 
+			stmt = conn.createStatement();
 
+			CreateTables tableCreator = new CreateTables();
 
+			tableCreator.createStudentTable(stmt);
 
-    public void createDegreesTable(Statement stmt) throws SQLException{
+			System.out.println("Student table created successfully.");
 
+			System.out.println("Creating department table...");
 
-        String sql = "CREATE TABLE degrees (" +
+			tableCreator.createDepartmentTable(stmt);
 
+			System.out.println("Department table created successfully.");
 
-        "dgname VARCHAR(50) NOT NULL," +
+			System.out.println("Creating degrees table...");
 
+			tableCreator.createDegreesTable(stmt);
 
-        "level VARCHAR(5) NOT NULL," +
+			System.out.println("Degrees table created successfully.");
 
+			// Display success message
 
-        "department_code INTEGER NOT NULL," +
+			System.out.println("Database setup completed successfully.");
 
+		} catch (SQLException e) {
 
-        "PRIMARY KEY (dgname, level)," +
+			System.out.println("Database operation failed:");
 
+			System.out.println("Error: " + e.getMessage());
 
-        "FOREIGN KEY (department_code) REFERENCES departments(dcode) ON DELETE CASCADE)";
+			System.out.println("SQL State: " + e.getSQLState());
 
+			System.out.println("Error Code: " + e.getErrorCode());
 
-        stmt.executeUpdate(sql);
+			e.printStackTrace();
 
+		} finally {
 
-    }
+			// Close resources
 
+			System.out.println("Closing database resources...");
 
+			try {
 
+				if (stmt != null) {
 
+					stmt.close();
 
-    public static void main(String[] args) {
+				}
 
+				if (conn != null) {
 
-        // Open a connection
+					conn.close();
 
+				}
 
-        System.out.println("Starting database setup process...");
+				System.out.println("Resources closed successfully.");
 
+			} catch (SQLException e) {
 
-        Connection conn = null;
+				System.out.println("Error closing resources: " + e.getMessage());
 
+			}
 
-        Statement stmt = null;
+		}
 
-
-
-
-
-        try {
-
-
-            System.out.println("Connecting to database...");
-
-
-            conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
-
-
-            System.out.println("Connection established successfully.");
-
-
-
-
-
-            // Create tables
-
-
-            System.out.println("Creating student table...");
-
-
-            stmt = conn.createStatement();
-
-
-            CreateTables tableCreator = new CreateTables();
-
-
-            tableCreator.createStudentTable(stmt);
-
-
-            System.out.println("Student table created successfully.");
-
-
-
-
-
-            System.out.println("Creating department table...");
-
-
-            tableCreator.createDepartmentTable(stmt);
-
-
-            System.out.println("Department table created successfully.");
-
-
-
-
-
-            System.out.println("Creating degrees table...");
-
-
-            tableCreator.createDegreesTable(stmt);
-
-
-            System.out.println("Degrees table created successfully.");
-
-
-            
-
-
-            // Display success message
-
-
-            System.out.println("Database setup completed successfully.");
-
-
-        } catch (SQLException e) {
-
-
-            System.out.println("Database operation failed:");
-
-
-            System.out.println("Error: " + e.getMessage());
-
-
-            System.out.println("SQL State: " + e.getSQLState());
-
-
-            System.out.println("Error Code: " + e.getErrorCode());
-
-
-            e.printStackTrace();
-
-
-        } finally {
-
-
-            // Close resources
-
-
-            System.out.println("Closing database resources...");
-
-
-            try {
-
-
-                if (stmt != null) {
-
-
-                    stmt.close();
-
-
-                }
-
-
-                if (conn != null) {
-
-
-                    conn.close();
-
-
-                }
-
-
-                System.out.println("Resources closed successfully.");
-
-
-            } catch (SQLException e) {
-
-
-                System.out.println("Error closing resources: " + e.getMessage());
-
-
-            }
-
-
-        }
-
-
-    }
-
+	}
 
 }

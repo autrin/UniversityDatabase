@@ -103,7 +103,24 @@ public class CreateTables {
 		stmt.execute(sql);
 	}
 	
-	
+	public void createRegisterTable(Statement stmt) throws SQLException {
+	    // Drop the table if it exists
+	    String dropSql = "DROP TABLE IF EXISTS register";
+	    stmt.execute(dropSql);
+	    
+	    String sql = "CREATE TABLE register ("
+	            + "sid INTEGER NOT NULL,"
+	            + "course_number INTEGER NOT NULL,"
+	            + "regtime VARCHAR(20) NOT NULL,"
+	            + "grade INTEGER,"
+	            + "PRIMARY KEY (sid, course_number),"
+	            + "FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE,"
+	            + "FOREIGN KEY (course_number) REFERENCES courses(cnumber) ON DELETE CASCADE"
+	            + ")";
+
+	    stmt.execute(sql);
+	}
+
 
 	public static void main(String[] args) {
 

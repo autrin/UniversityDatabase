@@ -59,6 +59,10 @@ public class Query {
 			query.query1(stmt);
 			System.out.println("Query 1 completed.");
 
+			System.out.println("Query 2:");
+			query.query2(stmt);
+			System.out.println("Query 2 completed.");
+			
 		} catch (SQLException e) {
 			System.out.println("Database operation failed:");
 			System.out.println("Error: " + e.getMessage());

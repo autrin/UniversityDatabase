@@ -43,6 +43,7 @@ public class CreateTables {
 	    // Drop the table if it exists
 	    String dropSql = "DROP TABLE IF EXISTS departments";
 	    stmt.execute(dropSql);
+	    
 		String sql = "CREATE TABLE departments ("
 
 				+ "dcode INTEGER PRIMARY KEY,"
@@ -58,7 +59,10 @@ public class CreateTables {
 	}
 
 	public void createDegreesTable(Statement stmt) throws SQLException {
-
+	    // Drop the table if it exists
+	    String dropSql = "DROP TABLE IF EXISTS degrees";
+	    stmt.execute(dropSql);
+	    
 		String sql = "CREATE TABLE degrees (" +
 
 				"dgname VARCHAR(50) NOT NULL," +

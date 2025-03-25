@@ -12,9 +12,12 @@ public class Query {
 		 * The numbers and names of courses and their corresponding average grades from
 		 * students registered in the past semesters
 		 */
-		String sql = "SELECT c.cnumber, c.cname, AVG(r.grade)" + "FROM courses c"
-				+ "Join register r on c.cnumber = r.cnumber" + "GROUP BY c.cnumber, c.cname";
-		stmt.execute(sql);
+        String sql = 
+                "SELECT c.cnumber, c.cname, AVG(r.grade) AS avg_grade " +
+                "FROM courses c " +
+                "JOIN register r ON c.cnumber = r.course_number " +
+                "GROUP BY c.cnumber, c.cname";
+		stmt.executeQuery(sql);
 	}
 
 	public static void main(String[] args) {

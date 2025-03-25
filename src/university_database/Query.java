@@ -25,6 +25,25 @@ public class Query {
 		}
 	}
 
+	public void query2(Statement stmt) throws SQLException {
+		/*
+		 * The count of female students who major or minor in a degree managed by LAS
+		 * departments
+		 * 
+		 */
+		String sql = "With f_students as (" + "SELECT DISTINCT s.sid, mj.name, mn.name " + "FROM students s "
+				+ "JOIN major mj ON s.sid = mj.sid " + "JOIN major mn ON s.sid = mn.sid "
+				+ "WHERE s.gender = 'F' and (mj.name is not null or " + "mn.name is not null)) "
+				+ "SELECT COUNT(f.sid) as f_count" + "FROM f_students f " + "JOIN degrees dg ON f.name = dg.dgname"
+				+ "JOIN departments dp ON dg.department_code = dp.dcode" + "WHERE dp.college = 'LAS'"
+				+ "GROUP BY f.sid";
+		ResultSet rs = stmt.executeQuery(sql);
+		while (rs.next()) {
+			int f_count = rs.getInt("f_count");
+			System.out.println(f_count);
+		}
+	}
+
 	public static void main(String[] args) {
 		System.out.println("Starting Query process...");
 		Connection conn = null;

@@ -80,7 +80,10 @@ public class CreateTables {
 	}
 	
 	public void createCoursesTable(Statement stmt) throws SQLException {
-		
+	    // Drop the table if it exists
+	    String dropSql = "DROP TABLE IF EXISTS courses";
+	    stmt.execute(dropSql);
+	    
 		String sql = "CREATE TABLE courses (" +
 
 			    "cnumber INTEGER PRIMARY KEY," +

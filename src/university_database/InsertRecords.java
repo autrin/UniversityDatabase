@@ -103,6 +103,8 @@ public class InsertRecords {
             stmt = conn.createStatement();
             System.out.println("Connection established.");
 
+            stmt.execute("SET GLOBAL local_infile = 1");
+            
             System.out.println("Loading student records...");
             inserter.loadStudentRecords(stmt);
             System.out.println("Student records loaded.");

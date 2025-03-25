@@ -1,6 +1,8 @@
 package university_database;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Query {
@@ -19,7 +21,15 @@ public class Query {
 		Statement stmt = null;
 		Query query = new Query();
 		
-
+		try {
+			conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
+			stmt  = conn.createStatement();
+			System.out.println("Connection established.");
+			
+			
+		} catch (SQLException e) {
+			
+		}
 	}
 
 }

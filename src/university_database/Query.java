@@ -2,6 +2,7 @@ package university_database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -12,12 +13,16 @@ public class Query {
 		 * The numbers and names of courses and their corresponding average grades from
 		 * students registered in the past semesters
 		 */
-        String sql = 
-                "SELECT c.cnumber, c.cname, AVG(r.grade) AS avg_grade " +
-                "FROM courses c " +
-                "JOIN register r ON c.cnumber = r.course_number " +
-                "GROUP BY c.cnumber, c.cname";
-		stmt.executeQuery(sql);
+		String sql = "SELECT c.cnumber, c.cname, AVG(r.grade) AS avg_grade " + "FROM courses c "
+				+ "JOIN register r ON c.cnumber = r.course_number " + "GROUP BY c.cnumber, c.cname";
+		ResultSet rs = stmt.executeQuery(sql);
+		while (rs.next()) {
+			int cnumber = rs.getInt("cnumber");
+			String cname = rs.getString("cname");
+			double avgGrade = rs.getDouble("avg_grade");
+
+			System.out.println("Course #: " + cnumber + ", Name: " + cname + ", Avg Grade: " + avgGrade);
+		}
 	}
 
 	public static void main(String[] args) {

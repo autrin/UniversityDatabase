@@ -94,6 +94,10 @@ public class ModifyRecords {
 			System.out.println("Error in modifyRecord3(): " + e.getMessage());
 		}
 	}
+	
+	public void modifyRecords4(Statement stmt) throws SQLException{
+		// TODO
+	}
 
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");

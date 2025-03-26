@@ -84,20 +84,14 @@ public class ModifyRecords {
 
 	public void modifyRecords4(Statement stmt) throws SQLException {
 		/*
-		 * If a group of courses have the same level and department_code, only keep
-		 * the one with the smallest course number and delete the rest. If a course is
+		 * If a group of courses have the same level and department_code, only keep the
+		 * one with the smallest course number and delete the rest. If a course is
 		 * deleted, the corresponding record in register relation should also be
 		 * deleted.
 		 */
-	    String deleteCoursesSql = 
-	            "DELETE FROM courses " +
-	            "WHERE cnumber NOT IN (" +
-	            "   SELECT min_cnumber FROM (" +
-	            "       SELECT MIN(cnumber) AS min_cnumber " +
-	            "       FROM courses " +
-	            "       GROUP BY department_code, level" +
-	            "   ) AS temp" +
-	            ")";
+		String deleteCoursesSql = "DELETE FROM courses " + "WHERE cnumber NOT IN (" + "   SELECT min_cnumber FROM ("
+				+ "       SELECT MIN(cnumber) AS min_cnumber " + "       FROM courses "
+				+ "       GROUP BY department_code, level" + "   ) AS temp" + ")";
 		try {
 			int rowsDeleted = stmt.executeUpdate(deleteCoursesSql);
 			System.out.println("Deleted " + rowsDeleted + " courses.");
@@ -105,29 +99,29 @@ public class ModifyRecords {
 			System.out.println("Error in modifyRecord4(): " + e.getMessage());
 		}
 	}
-	
+
 	private static void printTable(Statement stmt, String tableName) throws SQLException {
-	    System.out.println("\nTable: " + tableName);
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName);
-	    ResultSetMetaData rsmd = rs.getMetaData();
-	    int columns = rsmd.getColumnCount();
+		System.out.println("\nTable: " + tableName);
+		ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName);
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int columns = rsmd.getColumnCount();
 
-	    // Print column headers
-	    for (int i = 1; i <= columns; i++) {
-	        System.out.print(rsmd.getColumnName(i) + "\t");
-	    }
-	    System.out.println();
+		// Print column headers
+		for (int i = 1; i <= columns; i++) {
+			System.out.print(rsmd.getColumnName(i) + "\t");
+		}
+		System.out.println();
 
-	    // Print rows
-	    while (rs.next()) {
-	        for (int i = 1; i <= columns; i++) {
-	            System.out.print(rs.getString(i) + "\t");
-	        }
-	        System.out.println();
-	    }
-	    rs.close();
+		// Print rows
+		while (rs.next()) {
+			for (int i = 1; i <= columns; i++) {
+				System.out.print(rs.getString(i) + "\t");
+			}
+			System.out.println();
+		}
+		rs.close();
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");
 
@@ -155,7 +149,7 @@ public class ModifyRecords {
 
 			System.out.println("Modifying record #4 ...");
 			modifyRecords.modifyRecords4(stmt);
-			
+
 			System.out.println("Printing updated tables...");
 			printTable(stmt, "students");
 			printTable(stmt, "major");

@@ -2,96 +2,61 @@ package university_database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Index {
 
-	public void indexedQuery3(Statement stmt) throws SQLException {
-		// Run the query: the names and levels of degrees that have more male
-		// students than female students
-		// (major or minor)
-		String querySql = "WITH all_degrees AS ( " + "SELECT sid, name, level FROM major " + "UNION ALL "
-				+ "SELECT sid, name, level FROM minor " + ") " + "SELECT ad.name, ad.level, "
-				+ "SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) AS male_count, "
-				+ "SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END) AS female_count " + "FROM all_degrees ad "
-				+ "JOIN students s ON ad.sid = s.sid " + "GROUP BY ad.name, ad.level "
-				+ "HAVING SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) > "
-				+ "SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END)";
+    public static void main(String[] args) {
+        System.out.println("Starting Index process...");
+        Connection conn = null;
+        Statement stmt = null;
 
-		ResultSet rsQuery = stmt.executeQuery(querySql);
-		while (rsQuery.next()) {
-			String name = rsQuery.getString("name");
-			String level = rsQuery.getString("level");
-			int maleCount = rsQuery.getInt("male_count");
-			int femaleCount = rsQuery.getInt("female_count");
-			System.out.println("Degree: " + name + ", Level: " + level + ", Male Count: " + maleCount
-					+ ", Female Count: " + femaleCount);
-		}
-	}
+        try {
+            conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
+            stmt = conn.createStatement();
 
-	public static void main(String[] args) {
-		System.out.println("Starting database setup process...");
-		Connection conn = null;
-		Statement stmt = null;
+            // Drop index if exists to ensure initial run is without it
+            try {
+                stmt.executeUpdate("DROP INDEX idx_gender ON students");
+                System.out.println("Dropped existing idx_gender index.");
+            } catch (SQLException e) {
+                System.out.println("No existing idx_gender index to drop.");
+            }
 
-		try {
-			conn = DriverManager.getConnection(Constants.DB_URL, Constants.USER, Constants.PASS);
-			stmt = conn.createStatement();
-			System.out.println("Connection established.");
+            // Execute query without index
+            System.out.println("Executing query without index...");
+            Query query = new Query();
+            long startTime = System.nanoTime();
+            query.query3(stmt);
+            long endTime = System.nanoTime();
+            long durationWithoutIndex = endTime - startTime;
+            System.out.println("Execution time without index: " + durationWithoutIndex + " ns");
 
-			// Time the execution of the non-indexed query (from Query.java)
-			long startTime = System.nanoTime();
-			Query q = new Query();
-			q.query3(stmt);
-			long endTime = System.nanoTime();
-			long duration = (endTime - startTime);
-			System.out.println("Query 3 execution time: " + duration + " nanoseconds");
+            // Create index
+            System.out.println("Creating index...");
+            stmt.executeUpdate("CREATE INDEX idx_gender ON students(gender)");
+            System.out.println("Index idx_gender created.");
 
-			// Now run the indexed query
-			System.out.println("Running indexed query 3...");
-			Index index = new Index();
-			// Check if index exists and drop if needed
-			String checkIndex = "SELECT COUNT(*) FROM information_schema.statistics "
-			        + "WHERE table_schema = 'university1' AND table_name = 'students' AND index_name = 'idx_gender'";
-			ResultSet rs = stmt.executeQuery(checkIndex);
-			boolean indexExists = false;
-			if (rs.next()) {
-			    indexExists = rs.getInt(1) > 0;
-			}
-			rs.close();
-			if (!indexExists) {
-			    stmt.executeUpdate("CREATE INDEX idx_gender ON students(gender)");
-			    System.out.println("Index idx_gender created.");
-			} else {
-			    System.out.println("Index idx_gender already exists.");
-			}
+            // Execute query with index
+            System.out.println("Executing query with index...");
+            long indexedStartTime = System.nanoTime();
+            query.query3(stmt);
+            long indexedEndTime = System.nanoTime();
+            long durationWithIndex = indexedEndTime - indexedStartTime;
+            System.out.println("Execution time with index: " + durationWithIndex + " ns");
 
-			// Now run the indexed query several times to measure its performance
-			long indexedStartTime = System.nanoTime();
-			index.indexedQuery3(stmt); // Query uses the already-created index
-			long indexedEndTime = System.nanoTime();
-			long indexedDuration = (indexedEndTime - indexedStartTime);
-			System.out.println("Indexed query 3 execution time: " + indexedDuration + " nanoseconds");
-
-		} catch (SQLException e) {
-			System.out.println("Database operation failed:");
-			System.out.println("Error: " + e.getMessage());
-			System.out.println("SQL State: " + e.getSQLState());
-			System.out.println("Error Code: " + e.getErrorCode());
-			e.printStackTrace();
-		} finally {
-			System.out.println("Closing database resources...");
-			try {
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
-				System.out.println("Resources closed successfully.");
-			} catch (SQLException e) {
-				System.out.println("Error closing resources: " + e.getMessage());
-			}
-		}
-	}
+        } catch (SQLException e) {
+            System.out.println("Database operation failed:");
+            e.printStackTrace();
+        } finally {
+            System.out.println("Closing resources...");
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

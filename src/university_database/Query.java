@@ -48,12 +48,16 @@ public class Query {
 		 * The names and levels of degrees that have more male students than female
 		 * students (major or minor)
 		 */
-		String sql = "WITH all_degrees AS (" + "SELECT sid, name, level FROM major " + "UNION ALL "
-				+ "SELECT sid, name, level FROM minor " + ") " + "SELECT ad.name, ad.level, "
-				+ "SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) AS male_count, "
-				+ "SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END) AS female_count " + "FROM all_degrees ad "
-				+ "JOIN students s ON ad.sid = s.sid " + "GROUP BY ad.name, ad.level "
-				+ "HAVING SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) > SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END);";
+        String sql = "WITH all_degrees AS ("
+                + "SELECT sid, name, level FROM major "
+                + "UNION ALL "
+                + "SELECT sid, name, level FROM minor) "
+                + "SELECT ad.name, ad.level "
+                + "FROM all_degrees ad "
+                + "JOIN students s ON ad.sid = s.sid "
+                + "GROUP BY ad.name, ad.level "
+                + "HAVING SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) > "
+                + "       SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END)";
 
 		try(ResultSet rs = stmt.executeQuery(sql)){			
 			while (rs.next()) {

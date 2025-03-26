@@ -2,6 +2,7 @@ package university_database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -34,18 +35,31 @@ public class ModifyRecords {
 		}
 	}
 	
-	public void modifyRecords3(Statement stmt) throws SQLException{
-		/*
-		 * Delete all registration records that were in “Summer2024”
-		 */
-		String sql = "DELETE FROM register WHERE regtime = 'Summer2024'";
-		try {
-			stmt.execute(sql);
-			System.out.println("3rd record modification done successfully.");
-		} catch (SQLException e) {
-			System.out.println("Error in modifyRecord3(): " + e.getMessage());
-		}
+	public void modifyRecords3(Statement stmt) throws SQLException {
+	    // Delete registration records for Summer2024
+	    String deleteSql = "DELETE FROM register WHERE regtime = 'Summer2024'";
+	    try {
+	        int rowsDeleted = stmt.executeUpdate(deleteSql);
+	        System.out.println("Deleted " + rowsDeleted + " registration records for Summer2024.");
+	        
+	        // Now query the register table to print its current contents
+	        String selectSql = "SELECT * FROM register";
+	        ResultSet rs = stmt.executeQuery(selectSql);
+	        System.out.println("Current register records:");
+	        while (rs.next()) {
+	            int sid = rs.getInt("sid");
+	            int courseNumber = rs.getInt("course_number");
+	            String regtime = rs.getString("regtime");
+	            int grade = rs.getInt("grade");
+	            System.out.println("sid: " + sid + ", course_number: " + courseNumber
+	                               + ", regtime: " + regtime + ", grade: " + grade);
+	        }
+	        rs.close();
+	    } catch (SQLException e) {
+	        System.out.println("Error in modifyRecord3(): " + e.getMessage());
+	    }
 	}
+
 	
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");

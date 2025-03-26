@@ -3,6 +3,7 @@ package university_database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -94,9 +95,39 @@ public class ModifyRecords {
 			System.out.println("Error in modifyRecord3(): " + e.getMessage());
 		}
 	}
-	
-	public void modifyRecords4(Statement stmt) throws SQLException{
-		// TODO
+
+	public void modifyRecords4(Statement stmt) throws SQLException {
+		/*
+		 * If a group of courses have the same level and department_code, only keep
+		 * the one with the smallest course number and delete the rest. If a course is
+		 * deleted, the corresponding record in register relation should also be
+		 * deleted.
+		 */
+        String deleteCoursesSql = 
+                "DELETE c1 FROM courses c1 " +
+                "INNER JOIN courses c2 ON c1.department_code = c2.department_code " +
+                "AND c1.level = c2.level " +
+                "AND c1.cnumber > c2.cnumber";
+		try {
+			int rowsDeleted = stmt.executeUpdate(deleteCoursesSql);
+			System.out.println("Deleted " + rowsDeleted + " courses.");
+		
+			System.out.println("Current courses records:");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM courses");
+			while(rs.next()) {
+				// another approach to print out the table
+				ResultSetMetaData rsmd = rs.getMetaData();
+				int columnsNumber = rsmd.getColumnCount();
+				for (int i = 1; i <= columnsNumber; i++) {
+					if (i > 1) System.out.print(", ");
+					String columnValue = rs.getString(i);
+					System.out.print(rsmd.getColumnName(i) + ": " + columnValue);
+				}
+				System.out.println("");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error in modifyRecord4(): " + e.getMessage());
+		}
 	}
 
 	public static void main(String[] args) {
@@ -124,6 +155,9 @@ public class ModifyRecords {
 			System.out.println("Modifying record #3 ...");
 			modifyRecords.modifyRecords3(stmt);
 
+			System.out.println("Modifying record #4 ...");
+			modifyRecords.modifyRecords4(stmt);
+			
 		} catch (SQLException e) {
 			System.out.println("Database operation failed:");
 			System.out.println("Error: " + e.getMessage());

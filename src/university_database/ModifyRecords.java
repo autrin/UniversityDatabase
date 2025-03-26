@@ -7,60 +7,94 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class ModifyRecords {
-	
+
 	public void modifyRecord1(Statement stmt) throws SQLException {
 		/*
-		 * Change the name of the student with ssn = 144673371 to Scott
+		 * Change the name of the student with ssn = 144673371 to Scott and print out
+		 * the new table where the modification is conducted.
 		 */
 		String sql = "UPDATE students SET name = 'Scott' WHERE ssn = 144673371";
 		try {
-			stmt.execute(sql);
-			System.out.println("1st record modification done successfully.");
+			int update = stmt.executeUpdate(sql);
+			System.out.println("Updated " + update + " record(s).");
+
+			// Query the updated record from students table
+			String selectSql = "SELECT * FROM students WHERE ssn = 144673371";
+			ResultSet rs = stmt.executeQuery(selectSql);
+			System.out.println("Current record:");
+			while (rs.next()) {
+				int sid = rs.getInt("sid");
+				int ssn = rs.getInt("ssn");
+				String name = rs.getString("name");
+				String gender = rs.getString("gender");
+				String dob = rs.getString("dob");
+				String p_addr = rs.getString("p_addr");
+				String p_phone = rs.getString("p_phone");
+				String c_addr = rs.getString("c_addr");
+				String c_phone = rs.getString("c_phone");
+				System.out.println("sid: " + sid + ", ssn: " + ssn + ", name: " + name + ", gender: " + gender
+						+ ", dob: " + dob + ", p_addr: " + p_addr + ", p_phone: " + p_phone + ", c_addr: " + c_addr
+						+ ", c_phone: " + c_phone);
+			}
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Error in modifyRecord1(): " + e.getMessage());
 		}
 	}
-	
+
 	public void modifyRecords2(Statement stmt) throws SQLException {
 		/*
-		 * Change the major of the student with ssn = 144673371 to Computer Science, Master. 
+		 * Change the major of the student with ssn = 144673371 to Computer Science,
+		 * Master. and print out the new table (major) where the modification is
+		 * conducted.
 		 */
-		String sql = "UPDATE major SET name = 'Computer Science', level = 'MS' "
-				+ "WHERE (SELECT sid FROM students WHERE ssn = 144673371)";
+		String updateSql = "UPDATE major SET name = 'Computer Science', level = 'MS' "
+				+ "WHERE sid = (SELECT sid FROM students WHERE ssn = 144673371)";
 		try {
-			stmt.execute(sql);
-			System.out.println("2nd record modification done successfully.");
+			int update = stmt.executeUpdate(updateSql);
+			System.out.println("2nd record modification done successfully. Updated " + update + " record(s).");
+
+			// Now query the major table for the updated record
+			String selectSql = "SELECT * FROM major WHERE sid = (SELECT sid FROM students WHERE ssn = 144673371)";
+			ResultSet rs = stmt.executeQuery(selectSql);
+			System.out.println("Updated major record:");
+			while (rs.next()) {
+				int sid = rs.getInt("sid");
+				String majorName = rs.getString("name");
+				String level = rs.getString("level");
+				System.out.println("sid: " + sid + ", Major: " + majorName + ", Level: " + level);
+			}
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Error in modifyRecord2(): " + e.getMessage());
 		}
 	}
-	
+
 	public void modifyRecords3(Statement stmt) throws SQLException {
-	    // Delete registration records for Summer2024
-	    String deleteSql = "DELETE FROM register WHERE regtime = 'Summer2024'";
-	    try {
-	        int rowsDeleted = stmt.executeUpdate(deleteSql);
-	        System.out.println("Deleted " + rowsDeleted + " registration records for Summer2024.");
-	        
-	        // Now query the register table to print its current contents
-	        String selectSql = "SELECT * FROM register";
-	        ResultSet rs = stmt.executeQuery(selectSql);
-	        System.out.println("Current register records:");
-	        while (rs.next()) {
-	            int sid = rs.getInt("sid");
-	            int courseNumber = rs.getInt("course_number");
-	            String regtime = rs.getString("regtime");
-	            int grade = rs.getInt("grade");
-	            System.out.println("sid: " + sid + ", course_number: " + courseNumber
-	                               + ", regtime: " + regtime + ", grade: " + grade);
-	        }
-	        rs.close();
-	    } catch (SQLException e) {
-	        System.out.println("Error in modifyRecord3(): " + e.getMessage());
-	    }
+		// Delete registration records for Summer2024
+		String deleteSql = "DELETE FROM register WHERE regtime = 'Summer2024'";
+		try {
+			int rowsDeleted = stmt.executeUpdate(deleteSql);
+			System.out.println("Deleted " + rowsDeleted + " registration records for Summer2024.");
+
+			// Now query the register table to print its current contents
+			String selectSql = "SELECT * FROM register";
+			ResultSet rs = stmt.executeQuery(selectSql);
+			System.out.println("Current register records:");
+			while (rs.next()) {
+				int sid = rs.getInt("sid");
+				int courseNumber = rs.getInt("course_number");
+				String regtime = rs.getString("regtime");
+				int grade = rs.getInt("grade");
+				System.out.println("sid: " + sid + ", course_number: " + courseNumber + ", regtime: " + regtime
+						+ ", grade: " + grade);
+			}
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("Error in modifyRecord3(): " + e.getMessage());
+		}
 	}
 
-	
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");
 
@@ -74,18 +108,17 @@ public class ModifyRecords {
 
 			stmt = conn.createStatement();
 			System.out.println("Statement created successfully.");
-			
+
 			System.out.println("Modifying records...");
 			ModifyRecords modifyRecords = new ModifyRecords();
 			System.out.println("Modifying record #1 ...");
 			modifyRecords.modifyRecord1(stmt);
-			
+
 			System.out.println("Modifying record #2 ...");
 			modifyRecords.modifyRecords2(stmt);
-			
+
 			System.out.println("Modifying record #3 ...");
 			modifyRecords.modifyRecords3(stmt);
-			
 
 		} catch (SQLException e) {
 			System.out.println("Database operation failed:");

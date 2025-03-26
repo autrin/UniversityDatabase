@@ -103,11 +103,12 @@ public class ModifyRecords {
 		 * deleted, the corresponding record in register relation should also be
 		 * deleted.
 		 */
-        String deleteCoursesSql = 
-                "DELETE c1 FROM courses c1 " +
-                "INNER JOIN courses c2 ON c1.department_code = c2.department_code " +
-                "AND c1.level = c2.level " +
-                "AND c1.cnumber > c2.cnumber";
+		String deleteCoursesSql = 
+			    "DELETE c FROM courses c " +
+			    "WHERE c.cnumber NOT IN (" +
+			    "   SELECT MIN(cnumber) FROM courses " +
+			    "   GROUP BY department_code, level" +
+			    ")";
 		try {
 			int rowsDeleted = stmt.executeUpdate(deleteCoursesSql);
 			System.out.println("Deleted " + rowsDeleted + " courses.");
@@ -129,7 +130,29 @@ public class ModifyRecords {
 			System.out.println("Error in modifyRecord4(): " + e.getMessage());
 		}
 	}
+	
+	private static void printTable(Statement stmt, String tableName) throws SQLException {
+	    System.out.println("\nTable: " + tableName);
+	    ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName);
+	    ResultSetMetaData rsmd = rs.getMetaData();
+	    int columns = rsmd.getColumnCount();
 
+	    // Print column headers
+	    for (int i = 1; i <= columns; i++) {
+	        System.out.print(rsmd.getColumnName(i) + "\t");
+	    }
+	    System.out.println();
+
+	    // Print rows
+	    while (rs.next()) {
+	        for (int i = 1; i <= columns; i++) {
+	            System.out.print(rs.getString(i) + "\t");
+	        }
+	        System.out.println();
+	    }
+	    rs.close();
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");
 

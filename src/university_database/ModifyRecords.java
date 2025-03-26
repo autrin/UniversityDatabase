@@ -77,20 +77,6 @@ public class ModifyRecords {
 		try {
 			int rowsDeleted = stmt.executeUpdate(deleteSql);
 			System.out.println("Deleted " + rowsDeleted + " registration records for Summer2024.");
-
-			// Now query the register table to print its current contents
-			String selectSql = "SELECT * FROM register";
-			ResultSet rs = stmt.executeQuery(selectSql);
-			System.out.println("Current register records:");
-			while (rs.next()) {
-				int sid = rs.getInt("sid");
-				int courseNumber = rs.getInt("course_number");
-				String regtime = rs.getString("regtime");
-				int grade = rs.getInt("grade");
-				System.out.println("sid: " + sid + ", course_number: " + courseNumber + ", regtime: " + regtime
-						+ ", grade: " + grade);
-			}
-			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Error in modifyRecord3(): " + e.getMessage());
 		}
@@ -103,29 +89,18 @@ public class ModifyRecords {
 		 * deleted, the corresponding record in register relation should also be
 		 * deleted.
 		 */
-		String deleteCoursesSql = 
-			    "DELETE c FROM courses c " +
-			    "WHERE c.cnumber NOT IN (" +
-			    "   SELECT MIN(cnumber) FROM courses " +
-			    "   GROUP BY department_code, level" +
-			    ")";
+	    String deleteCoursesSql = 
+	            "DELETE FROM courses " +
+	            "WHERE cnumber NOT IN (" +
+	            "   SELECT min_cnumber FROM (" +
+	            "       SELECT MIN(cnumber) AS min_cnumber " +
+	            "       FROM courses " +
+	            "       GROUP BY department_code, level" +
+	            "   ) AS temp" +
+	            ")";
 		try {
 			int rowsDeleted = stmt.executeUpdate(deleteCoursesSql);
 			System.out.println("Deleted " + rowsDeleted + " courses.");
-		
-			System.out.println("Current courses records:");
-			ResultSet rs = stmt.executeQuery("SELECT * FROM courses");
-			while(rs.next()) {
-				// another approach to print out the table
-				ResultSetMetaData rsmd = rs.getMetaData();
-				int columnsNumber = rsmd.getColumnCount();
-				for (int i = 1; i <= columnsNumber; i++) {
-					if (i > 1) System.out.print(", ");
-					String columnValue = rs.getString(i);
-					System.out.print(rsmd.getColumnName(i) + ": " + columnValue);
-				}
-				System.out.println("");
-			}
 		} catch (SQLException e) {
 			System.out.println("Error in modifyRecord4(): " + e.getMessage());
 		}
@@ -181,6 +156,11 @@ public class ModifyRecords {
 			System.out.println("Modifying record #4 ...");
 			modifyRecords.modifyRecords4(stmt);
 			
+			System.out.println("Printing updated tables...");
+			printTable(stmt, "students");
+			printTable(stmt, "major");
+			printTable(stmt, "register");
+			printTable(stmt, "courses");
 		} catch (SQLException e) {
 			System.out.println("Database operation failed:");
 			System.out.println("Error: " + e.getMessage());

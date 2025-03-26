@@ -20,6 +20,7 @@ public class Query {
 	            double avgGrade = rs.getDouble("avg_grade");
 	            System.out.println("Course #: " + cnumber + ", Name: " + cname + ", Avg Grade: " + avgGrade);
 	        }
+	        rs.close();
 	    }
 	}
 
@@ -40,6 +41,7 @@ public class Query {
 				int f_count = rs.getInt("f_count");
 				System.out.println("f_count: " + f_count);
 			}
+			rs.close();
 		}
 	}
 
@@ -65,6 +67,7 @@ public class Query {
 				String level = rs.getString("level");
 				System.out.println("Name: " + name + ", Level: " + level);
 			}
+			rs.close();
 		}
 	}
 

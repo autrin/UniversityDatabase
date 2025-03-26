@@ -8,6 +8,18 @@ import java.sql.Statement;
 public class DropTables {
 	// delete all tables
 
+	public void dropStudentTable(Statement stmt) throws SQLException {
+		String sqlDrop = "DROP TABLE IF EXISTS register, minor, major, courses, degrees, departments, students; ";
+		try {
+			stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
+			stmt.execute(sqlDrop);
+			System.out.println("Tables dropped successfully.");
+			stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
+		} catch (SQLException e) {
+			System.out.println("Error in dropStudentTable(): " + e.getMessage());
+		}
+	}
+
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");
 
@@ -21,6 +33,11 @@ public class DropTables {
 
 			stmt = conn.createStatement();
 			System.out.println("Statement created successfully.");
+
+			System.out.println("Dropping tables...");
+			DropTables dropTables = new DropTables();
+			dropTables.dropStudentTable(stmt);
+
 		} catch (SQLException e) {
 			System.out.println("Database operation failed:");
 			System.out.println("Error: " + e.getMessage());

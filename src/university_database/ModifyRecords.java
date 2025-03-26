@@ -6,7 +6,34 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class ModifyRecords {
-
+	
+	public void modifyRecord1(Statement stmt) throws SQLException {
+		/*
+		 * Change the name of the student with ssn = 144673371 to Scott
+		 */
+		String sql = "UPDATE students SET name = 'Scott' WHERE ssn = 144673371";
+		try {
+			stmt.execute(sql);
+			System.out.println("1st record modification done successfully.");
+		} catch (SQLException e) {
+			System.out.println("Error in modifyRecord1(): " + e.getMessage());
+		}
+	}
+	
+	public void modifyRecords2(Statement stmt) throws SQLException {
+		/*
+		 * Change the major of the student with ssn = 144673371 to Computer Science, Master. 
+		 */
+		String sql = "UPDATE major SET name = 'Computer Science', level = 'MS' "
+				+ "WHERE (SELECT sid FROM students WHERE ssn = 144673371)";
+		try {
+			stmt.execute(sql);
+			System.out.println("2nd record modification done successfully.");
+		} catch (SQLException e) {
+			System.out.println("Error in modifyRecord2(): " + e.getMessage());
+		}
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");
 
@@ -19,6 +46,17 @@ public class ModifyRecords {
 			System.out.println("Connection established successfully.");
 
 			stmt = conn.createStatement();
+			System.out.println("Statement created successfully.");
+			
+			System.out.println("Modifying records...");
+			ModifyRecords modifyRecords = new ModifyRecords();
+			System.out.println("Modifying record #1 ...");
+			modifyRecords.modifyRecord1(stmt);
+			
+			System.out.println("Modifying record #2 ...");
+			modifyRecords.modifyRecords2(stmt);
+			
+
 		} catch (SQLException e) {
 			System.out.println("Database operation failed:");
 			System.out.println("Error: " + e.getMessage());

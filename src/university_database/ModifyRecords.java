@@ -34,6 +34,19 @@ public class ModifyRecords {
 		}
 	}
 	
+	public void modifyRecords3(Statement stmt) throws SQLException{
+		/*
+		 * Delete all registration records that were in “Summer2024”
+		 */
+		String sql = "DELETE FROM register WHERE regtime = 'Summer2024'";
+		try {
+			stmt.execute(sql);
+			System.out.println("3rd record modification done successfully.");
+		} catch (SQLException e) {
+			System.out.println("Error in modifyRecord3(): " + e.getMessage());
+		}
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("Starting database setup process...");
 
@@ -55,6 +68,9 @@ public class ModifyRecords {
 			
 			System.out.println("Modifying record #2 ...");
 			modifyRecords.modifyRecords2(stmt);
+			
+			System.out.println("Modifying record #3 ...");
+			modifyRecords.modifyRecords3(stmt);
 			
 
 		} catch (SQLException e) {

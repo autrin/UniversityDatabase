@@ -31,12 +31,22 @@ public class Query {
 		 * departments
 		 * 
 		 */
-		String sql = "With f_students as (" + "SELECT DISTINCT s.sid, mj.name, mn.name " + "FROM students s "
-				+ "JOIN major mj ON s.sid = mj.sid " + "JOIN mainor mn ON s.sid = mn.sid "
-				+ "WHERE s.gender = 'F' and (mj.name is not null or " + "mn.name is not null)) "
-				+ "SELECT COUNT(DISTINCT f.sid) as f_count" + "FROM f_students f " + "JOIN degrees dg ON f.name = dg.dgname"
-				+ "JOIN departments dp ON dg.department_code = dp.dcode" + "WHERE dp.college = 'LAS'"
-				+ "GROUP BY f.sid";
+		String sql = "WITH f_students AS (" +
+					"SELECT DISTINCT s.sid " +
+					"FROM students s " +
+					"WHERE s.gender = 'F')," +
+					"all_degrees AS (" +
+					"SELECT sid, name, level " +
+					"FROM major " +
+					"UNION " +
+					"SELECT sid, name, level " +
+					"FROM minor) " +
+					"SELECT COUNT(DISTINCT f.sid) AS f_count " +
+					"FROM f_students f " +
+					"JOIN all_degrees ad on f.sid = ad.sid " +
+					"JOIN degrees dg on (ad.name = dg.dgname AND ad.level = dg.level) " +
+					"JOIN departments dp on dg.department_code = dp.dcode " +
+					"WHERE dp.college = 'LAS'";
 		ResultSet rs = stmt.executeQuery(sql);
 		while (rs.next()) {
 			int f_count = rs.getInt("f_count");

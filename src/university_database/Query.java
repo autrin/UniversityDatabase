@@ -31,26 +31,36 @@ public class Query {
 		 * departments
 		 * 
 		 */
-		String sql = "WITH f_students AS (" +
-					"SELECT DISTINCT s.sid " +
-					"FROM students s " +
-					"WHERE s.gender = 'F')," +
-					"all_degrees AS (" +
-					"SELECT sid, name, level " +
-					"FROM major " +
-					"UNION " +
-					"SELECT sid, name, level " +
-					"FROM minor) " +
-					"SELECT COUNT(DISTINCT f.sid) AS f_count " +
-					"FROM f_students f " +
-					"JOIN all_degrees ad on f.sid = ad.sid " +
-					"JOIN degrees dg on (ad.name = dg.dgname AND ad.level = dg.level) " +
-					"JOIN departments dp on dg.department_code = dp.dcode " +
-					"WHERE dp.college = 'LAS'";
+		String sql = "WITH f_students AS (" + "SELECT DISTINCT s.sid " + "FROM students s " + "WHERE s.gender = 'F'),"
+				+ "all_degrees AS (" + "SELECT sid, name, level " + "FROM major " + "UNION "
+				+ "SELECT sid, name, level " + "FROM minor) " + "SELECT COUNT(DISTINCT f.sid) AS f_count "
+				+ "FROM f_students f " + "JOIN all_degrees ad on f.sid = ad.sid "
+				+ "JOIN degrees dg on (ad.name = dg.dgname AND ad.level = dg.level) "
+				+ "JOIN departments dp on dg.department_code = dp.dcode " + "WHERE dp.college = 'LAS'";
 		ResultSet rs = stmt.executeQuery(sql);
 		while (rs.next()) {
 			int f_count = rs.getInt("f_count");
 			System.out.println(f_count);
+		}
+	}
+
+	public void query3(Statement stmt) throws SQLException {
+		/*
+		 * The names and levels of degrees that have more male students than female
+		 * students (major or minor)
+		 */
+		String sql = "WITH all_degrees AS (" + "SELECT sid, name, level FROM major " + "UNION ALL "
+				+ "SELECT sid, name, level FROM minor " + ") " + "SELECT ad.name, ad.level, "
+				+ "SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) AS male_count, "
+				+ "SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END) AS female_count " + "FROM all_degrees ad "
+				+ "JOIN students s ON ad.sid = s.sid " + "GROUP BY ad.name, ad.level "
+				+ "HAVING SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) > SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END);";
+
+		ResultSet rs = stmt.executeQuery(sql);
+		while (rs.next()) {
+			String name = rs.getString("name");
+			String level = rs.getString("level");
+			System.out.println("Name: " + name + ", Level: " + level);
 		}
 	}
 
@@ -72,7 +82,11 @@ public class Query {
 			System.out.println("Query 2:");
 			query.query2(stmt);
 			System.out.println("Query 2 completed.");
-			
+
+			System.out.println("Query 3:");
+			query.query3(stmt);
+			System.out.println("Query 3 completed.");
+
 		} catch (SQLException e) {
 			System.out.println("Database operation failed:");
 			System.out.println("Error: " + e.getMessage());

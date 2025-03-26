@@ -9,20 +9,18 @@ import java.sql.Statement;
 public class Query {
 
 	public void query1(Statement stmt) throws SQLException {
-		/*
-		 * The numbers and names of courses and their corresponding average grades from
-		 * students registered in the past semesters
-		 */
-		String sql = "SELECT c.cnumber, c.cname, AVG(r.grade) AS avg_grade " + "FROM courses c "
-				+ "JOIN register r ON c.cnumber = r.course_number " + "GROUP BY c.cnumber, c.cname";
-		ResultSet rs = stmt.executeQuery(sql);
-		while (rs.next()) {
-			int cnumber = rs.getInt("cnumber");
-			String cname = rs.getString("cname");
-			double avgGrade = rs.getDouble("avg_grade");
-
-			System.out.println("Course #: " + cnumber + ", Name: " + cname + ", Avg Grade: " + avgGrade);
-		}
+	    String sql = "SELECT c.cnumber, c.cname, AVG(r.grade) AS avg_grade " 
+	               + "FROM courses c "
+	               + "JOIN register r ON c.cnumber = r.course_number "
+	               + "GROUP BY c.cnumber, c.cname";
+	    try (ResultSet rs = stmt.executeQuery(sql)) {
+	        while (rs.next()) {
+	            int cnumber = rs.getInt("cnumber");
+	            String cname = rs.getString("cname");
+	            double avgGrade = rs.getDouble("avg_grade");
+	            System.out.println("Course #: " + cnumber + ", Name: " + cname + ", Avg Grade: " + avgGrade);
+	        }
+	    }
 	}
 
 	public void query2(Statement stmt) throws SQLException {
@@ -37,10 +35,11 @@ public class Query {
 				+ "FROM f_students f " + "JOIN all_degrees ad on f.sid = ad.sid "
 				+ "JOIN degrees dg on (ad.name = dg.dgname AND ad.level = dg.level) "
 				+ "JOIN departments dp on dg.department_code = dp.dcode " + "WHERE dp.college = 'LAS'";
-		ResultSet rs = stmt.executeQuery(sql);
-		while (rs.next()) {
-			int f_count = rs.getInt("f_count");
-			System.out.println(f_count);
+		try(ResultSet rs = stmt.executeQuery(sql)){			
+			while (rs.next()) {
+				int f_count = rs.getInt("f_count");
+				System.out.println("f_count: " + f_count);
+			}
 		}
 	}
 
@@ -56,11 +55,12 @@ public class Query {
 				+ "JOIN students s ON ad.sid = s.sid " + "GROUP BY ad.name, ad.level "
 				+ "HAVING SUM(CASE WHEN s.gender = 'M' THEN 1 ELSE 0 END) > SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END);";
 
-		ResultSet rs = stmt.executeQuery(sql);
-		while (rs.next()) {
-			String name = rs.getString("name");
-			String level = rs.getString("level");
-			System.out.println("Name: " + name + ", Level: " + level);
+		try(ResultSet rs = stmt.executeQuery(sql)){			
+			while (rs.next()) {
+				String name = rs.getString("name");
+				String level = rs.getString("level");
+				System.out.println("Name: " + name + ", Level: " + level);
+			}
 		}
 	}
 
